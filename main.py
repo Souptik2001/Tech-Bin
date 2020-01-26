@@ -1,4 +1,4 @@
-from flask import Flask,render_template, redirect
+from flask import Flask,render_template, redirect,request, session
 from flask_sqlalchemy import SQLAlchemy
 import csv
 import matplotlib
@@ -39,11 +39,21 @@ class Garbage(db.Model):
 class Login(db.Model):
     sl_no = db.Column(db.Integer, primary_key=True)
     Uname = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(80), unique=True, nullable=False)
+    address = db.Column(db.String(80), unique=True, nullable=False)
+    ph_no = db.Column(db.String(80), unique=True, nullable=False)
     Name = db.Column(db.String(80), unique=False, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
 
 
 
+@app.route('/')
+def home():
+    return render_template("home.html")
+
+@app.route('/about')
+def about():
+    return render_template("about.html")
 
 @app.route('/dashboard/<string:uname>')
 def dashboard(uname):
@@ -59,29 +69,66 @@ def dashboard(uname):
 
     return render_template("index.html", info=info, name_info=name_info)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template("login.html")
+    page='login'
+    u_w='F'
+    p_w='F'
+    if (request.method=='POST'):
+        Uname=request.form.get('uname')
+        password= request.form.get('pass')
+        log_det = Login.query.filter_by(Uname=Uname).first()
+        try:
+            if (log_det.Uname==Uname and log_det.password==password):
+                session['user']=Uname
+            else:
+                p_w='T'
+                return render_template("login.html", p_w=p_w,page=page)
+        except:
+            u_w='T'
+            return render_template("login.html", u_w=u_w,p_w=p_w,page=page)
+        return redirect('/')
+    return render_template("login.html", u_w=u_w,p_w=p_w,page=page)
 
-# @app.route('/signup')
-# def signup():
-#     uname = request.form.get('uname')
-#     password = request.form.get('password')
-#     user = Login.query.filter_by(Uname=uname).first()
-#     if(uname==user.Uname and password==user.password):
-#         session['user'] = 'uname'
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect('/')
 
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET','POST'])
 def signup():
-    Uname = request.form.get('uname')
-    Name = request.form.get('name')
-    password = request.form.get('password')
-    entry_login = Login(Uname=Uname, Name=Name, password=password)
-    entry_garbage = Garbage(Uname=Uname)
-    db.session.add(entry_garbage)
-    db.session.add(entry_login)
-    db.session.commit()
-
+    page='signup'
+    same_u='F'
+    same_e='F'
+    if (request.method=='POST'):
+        Uname = request.form.get('uname')
+        Name = request.form.get('name')
+        address = request.form.get('address')
+        email = request.form.get('email')
+        ph_no = request.form.get('ph_no')
+        password = request.form.get('pass')
+        duplicate_u = Login.query.filter_by(Uname=Uname).first()
+        duplicate_e = Login.query.filter_by(email=email).first()
+        # print(duplicate.Uname)
+        try:
+            try:
+                if (duplicate_e.email==email):
+                    same_e = 'T'
+                    return render_template("signup.html", same_u=same_u, same_e=same_e,page=page)
+            except:
+                if (duplicate_u.Uname==Uname):
+                    same_u = 'T'
+                    return render_template("signup.html", same_u=same_u, same_e=same_e,page=page)
+        except:
+            entry_login = Login(Uname=Uname, Name=Name, password=password, email=email, address=address, ph_no=ph_no)
+            entry_garbage = Garbage(Uname=Uname)
+            db.session.add(entry_garbage)
+            db.session.add(entry_login)
+            db.session.commit()
+    # print(same_u)
+    # print(same_e)
+    return render_template("signup.html", same_u=same_u, same_e=same_e,page=page)
 
 app.run(debug=True)
