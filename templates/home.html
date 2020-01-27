@@ -37,12 +37,21 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/contact">Contact</a>
                     </li>
+                    {% if logged == 'F' %}
                     <li class="nav-item">
                         <a class="nav-link" href="/signup">SignUp</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
+                    {% endif %} {% if logged == 'T' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/{{log_uname}}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -58,7 +67,8 @@
                     <li>Seerate wastes</li>
                     <li>Save Planet</li>
                 </ul>
-                <a href="/signup"><button type="button" class="btn btn-secondary btn-lg">I'm in the movement</button></a>
+                {% if logged == 'F' %}
+                <a href="/signup"><button type="button" class="btn btn-secondary btn-lg">I'm in the movement</button></a> {% endif %}
             </div>
         </div>
     </div>

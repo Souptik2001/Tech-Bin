@@ -5,7 +5,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 
-
+logged='F'
+log_uname = 'qwertyiooplkj'
 
 local_host = True
 
@@ -49,28 +50,47 @@ class Login(db.Model):
 
 @app.route('/')
 def home():
-    return render_template("home.html")
+    global logged
+    if ('user' in session and session['user']==log_uname):
+        logged='T'
+    return render_template("home.html", logged=logged, log_uname=log_uname)
 
 @app.route('/about')
 def about():
-    return render_template("about.html")
+    global logged
+    if ('user' in session and session['user']==log_uname):
+        logged='T'
+    return render_template("about.html", logged=logged, log_uname=log_uname)
+
+@app.route('/contact')
+def contact():
+    global logged
+    if ('user' in session and session['user']==log_uname):
+        logged='T'
+    return render_template("contact.html", logged=logged, log_uname=log_uname)
 
 @app.route('/dashboard/<string:uname>')
 def dashboard(uname):
-    info = Garbage.query.filter_by(Uname=uname).first()
-    name_info = Login.query.filter_by(Uname=uname).first()
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-    weights = [info.Jan,info.Feb,info.March,info.April,info.May,info.June,info.July,info.August,info.Sept,info.Oct,info.Nov,info.Decem]
-    fig = plt.figure()
-    plt.plot(months,weights)
-    plt.xticks(rotation=90)
-    plt.savefig('static/img/plot.png', bbox_inches='tight')
-    # plt.show()
+    if ('user' in session and session['user']==log_uname and uname==log_uname):
+        info = Garbage.query.filter_by(Uname=uname).first()
+        name_info = Login.query.filter_by(Uname=uname).first()
+        months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+        weights = [info.Jan,info.Feb,info.March,info.April,info.May,info.June,info.July,info.August,info.Sept,info.Oct,info.Nov,info.Decem]
+        fig = plt.figure()
+        plt.plot(months,weights)
+        plt.xticks(rotation=90)
+        plt.savefig('static/img/plot.png', bbox_inches='tight')
+        # plt.show()
 
-    return render_template("index.html", info=info, name_info=name_info)
+        return render_template("index.html", info=info, name_info=name_info)
+    else:
+        return redirect('/')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global log_uname
+    if ('user' in session and session['user']==log_uname):
+        return redirect('/')
     page='login'
     u_w='F'
     p_w='F'
@@ -80,6 +100,7 @@ def login():
         log_det = Login.query.filter_by(Uname=Uname).first()
         try:
             if (log_det.Uname==Uname and log_det.password==password):
+                log_uname=Uname
                 session['user']=Uname
             else:
                 p_w='T'
@@ -93,12 +114,19 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    return redirect('/')
+    global logged
+    if ('user' in session and session['user']==log_uname):
+        logged='F'
+        session.pop('user', None)
+        return redirect('/')
+    else:
+        return redirect('/login')
 
 
 @app.route('/signup', methods=['GET','POST'])
 def signup():
+    if ('user' in session and session['user']==log_uname):
+        return redirect('/')
     page='signup'
     same_u='F'
     same_e='F'
