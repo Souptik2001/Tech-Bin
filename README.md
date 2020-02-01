@@ -27,3 +27,5 @@ Format: ![Alt Text](url)
 Format: ![Alt Text](url) -->
 
 ### Few features are still not yet implemented
+
+[![Run on Repl.it](https://repl.it/badge/github/Souptik2001/Tech-Bin)](https://repl.it/github/Souptik2001/Tech-Bin)
