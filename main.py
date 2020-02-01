@@ -232,4 +232,4 @@ def upload(uname):
         db.session.commit()
         return redirect('/dashboard')
 
-app.run(debug=True)
+app.run(host="0.0.0.0", port="1200", debug=True)
