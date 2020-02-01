@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page</title>
+    <title>Dashboard</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -89,7 +89,7 @@
                     <!-- Demo info -->
                     <div class="row text-center mt-4">
                         <div class="col-6 border-right">
-                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">Last week</span>
+                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">This month</span>
                         </div>
                         <div class="col-6">
                             <div class="h4 font-weight-bold mb-0">60%</div><span class="small text-gray">Last month</span>
@@ -98,6 +98,8 @@
                     <!-- END -->
                 </div>
             </div>
+
+
 
             <div class="col-xl-3 col-lg-6 mb-4">
                 <div class="bg-white rounded-lg p-5 shadow">
@@ -121,7 +123,7 @@
                     <!-- Demo info-->
                     <div class="row text-center mt-4">
                         <div class="col-6 border-right">
-                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">Last week</span>
+                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">This month</span>
                         </div>
                         <div class="col-6">
                             <div class="h4 font-weight-bold mb-0">60%</div><span class="small text-gray">Last month</span>
@@ -153,7 +155,7 @@
                     <!-- Demo info -->
                     <div class="row text-center mt-4">
                         <div class="col-6 border-right">
-                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">Last week</span>
+                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">This month</span>
                         </div>
                         <div class="col-6">
                             <div class="h4 font-weight-bold mb-0">60%</div><span class="small text-gray">Last month</span>
@@ -185,7 +187,7 @@
                     <!-- Demo info -->
                     <div class="row text-center mt-4">
                         <div class="col-6 border-right">
-                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">Last week</span>
+                            <div class="h4 font-weight-bold mb-0">28%</div><span class="small text-gray">This month</span>
                         </div>
                         <div class="col-6">
                             <div class="h4 font-weight-bold mb-0">60%</div><span class="small text-gray">Last month</span>
@@ -198,7 +200,21 @@
     </div>
 
     <div class="container py-5">
-        <img src="../static/img/plot.png" class="img-fluid rounded mx-auto d-block shadow-lg" alt="Graph error">
+        <img src="../static/img/img{{current_time}}/plot.png" class="img-fluid rounded mx-auto d-block shadow-lg" alt="Graph error">
+    </div>
+
+    <div class="container" style="padding-bottom: 20px;">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="mt-5">Your Points</h1>
+                <p class="lead">Clean and get gifts</p>
+                <ul class="list-unstyled">
+                    <li>You have <strong>{{info.Points}}</strong> points.</li>
+                    <li>Your points will expire in ____ days</li>
+                </ul>
+                <a href=""><button type="button" class="btn btn-primary btn-lg">Claim your gift</button></a>
+            </div>
+        </div>
     </div>
 
 

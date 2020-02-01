@@ -1,4 +1,7 @@
 from flask import Flask,render_template, redirect,request, session
+from datetime import datetime
+import shutil
+import os
 from flask_sqlalchemy import SQLAlchemy
 import csv
 import matplotlib
@@ -7,13 +10,18 @@ from matplotlib import pyplot as plt
 
 logged='F'
 log_uname = 'qwertyiooplkj'
-
+cleared = 'F'
 local_host = True
 
+
 app = Flask(__name__)
+app.config["CACHE_TYPE"] = "null"
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
+
 app.secret_key='super-secret-key'
 if (local_host):
-    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/techbin"
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/techbin"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///techbin.db"
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/techbin"
 db = SQLAlchemy(app)
@@ -24,6 +32,7 @@ class Garbage(db.Model):
     Bio = db.Column(db.Integer, unique=False, nullable=True)
     Non_Bio = db.Column(db.Integer, unique=False, nullable=True)
     E_waste = db.Column(db.Integer, unique=False, nullable=True)
+    Points = db.Column(db.Integer, unique=False, nullable=True)
     Jan = db.Column(db.Integer, unique=False, nullable=True)
     Feb = db.Column(db.Integer, unique=False, nullable=True)
     March = db.Column(db.Integer, unique=False, nullable=True)
@@ -79,12 +88,30 @@ def dashboard(uname):
         fig = plt.figure()
         plt.plot(months,weights)
         plt.xticks(rotation=90)
-        plt.savefig('static/img/plot.png', bbox_inches='tight')
+        for filename in os.listdir('./static/img'):
+            rm_path = os.path.join('./static/img', filename)
+            shutil.rmtree(rm_path)
+        # shutil.rmtree('./static/img')
+        now=datetime.now()
+        current_time = now.strftime("%H%M%S")
+        path = './static/img/img'+current_time+'/plot.png'
+        mk_path = './static/img/img'+current_time
+        os.mkdir(mk_path)
+        plt.savefig(path, bbox_inches='tight')
         # plt.show()
-
-        return render_template("index.html", info=info, name_info=name_info)
+        this_month = datetime.now().month
+        prev_month = this_month-1
+        return render_template("index.html", info=info, name_info=name_info, current_time=current_time, this_month=this_month, prev_month=prev_month)
     else:
         return redirect('/')
+
+# No caching at all for API endpoints.
+@app.after_request
+def add_header(response):
+    # response.cache_control.no_store = True
+    if 'Cache-Control' not in response.headers:
+        response.headers['Cache-Control'] = 'no-store'
+    return response
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -122,7 +149,6 @@ def logout():
     else:
         return redirect('/login')
 
-
 @app.route('/signup', methods=['GET','POST'])
 def signup():
     if ('user' in session and session['user']==log_uname):
@@ -151,12 +177,59 @@ def signup():
                     return render_template("signup.html", same_u=same_u, same_e=same_e,page=page)
         except:
             entry_login = Login(Uname=Uname, Name=Name, password=password, email=email, address=address, ph_no=ph_no)
-            entry_garbage = Garbage(Uname=Uname)
+            entry_garbage = Garbage(Uname=Uname, Bio=0, Non_Bio=0, E_waste=0, Jan=0, Feb=0, March=0, April=0, May=0, June=0, July=0, August=0, Sept=0, Oct=0, Nov=0, Decem=0)
             db.session.add(entry_garbage)
             db.session.add(entry_login)
             db.session.commit()
     # print(same_u)
     # print(same_e)
     return render_template("signup.html", same_u=same_u, same_e=same_e,page=page)
+
+
+@app.route('/dashboard')
+def o_dashboard():
+    global log_uname
+    if ('user' in session and session['user']==log_uname):
+        t_api='/dashboard/'+log_uname
+        return redirect(t_api)
+    else:
+        return redirect('/login')
+
+@app.route('/upload/<string:uname>', methods=['POST'])
+def upload(uname):
+    if(request.method=='POST'):
+        global cleared
+        content = request.get_json()
+        editable = Garbage.query.filter_by(Uname=uname).first()
+        old_bio = editable.Bio
+        old_non_bio = editable.Non_Bio
+        old_e_waste = editable.E_waste
+        present_hour = datetime.now().time().strftime("%H")
+        present_min = datetime.now().time().strftime("%M")
+        print(datetime.now().date().weekday())
+        if (present_hour == 12 and present_min>=0 and present_min<=50):
+            if(old_bio<1 and old_non_bio<1 and old_e_waste<1 and cleared=='F'):
+                cleared = 'T'
+                editable.Points = editable.Points + 5
+                db.session.commit()
+                return redirect('/')
+        if (present_hour == 13):
+            if (cleared == 'F'):
+                editable.Points = editable.Points - 5
+            cleared = 'F'
+        editable.Bio = content['bio']
+        editable.Non_Bio = content['non_bio']
+        editable.E_waste = content['e_waste']
+        if ((int(content['bio'])-int(old_bio)) > 0):
+            new_point = int(editable.Points) + (int(content['bio'])-int(old_bio))
+            editable.Points = new_point
+        if ((int(content['non_bio'])-int(old_non_bio)) > 0):
+            new_point = int(editable.Points) + (int(content['non_bio'])-int(old_non_bio))
+            editable.Points = new_point
+        if ((int(content['e_waste'])-int(old_e_waste)) > 0):
+            new_point = int(editable.Points) + (int(content['e_waste'])-int(old_e_waste))
+            editable.Points = new_point
+        db.session.commit()
+        return redirect('/dashboard')
 
 app.run(debug=True)
