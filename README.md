@@ -16,13 +16,13 @@ User will be rewarded on a daily basis and points would be deducted if no waste 
 
 ### Some screenshots of the dashboard
 
-![SS1](screenshots/Capture4.png)
+![SS1](/screenshots/Capture4.png)
 Format: ![Alt Text](url)
-![SS2](screenshots/Capture.png)
+![SS2](/screenshots/Capture.png)
 Format: ![Alt Text](url)
-![SS3](screenshots/Capture2.png)
+![SS3](/screenshots/Capture2.png)
 Format: ![Alt Text](url)
-![SS4](screenshots/Capture3.png)
+![SS4](/screenshots/Capture3.png)
 Format: ![Alt Text](url)
 
 #### Few features are still not yet implemented
