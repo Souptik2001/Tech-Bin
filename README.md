@@ -14,6 +14,7 @@ User will be rewarded on a daily basis and points would be deducted if no waste 
 * Next people will not throw wastes here and there and rather they will throw it in their respective dustbins to earn more points.
 * Also the problem of rotting of waste and smell problem will also be eliminated as garbage truck will come every 24-hours and if the person does'nt empty his/her dustbin points will be deducted.
 
+<!-- 
 ### Some screenshots of the dashboard
 
 ![SS1](/screenshots/Capture4.png)
@@ -23,6 +24,6 @@ Format: ![Alt Text](url)
 ![SS3](/screenshots/Capture2.png)
 Format: ![Alt Text](url)
 ![SS4](/screenshots/Capture3.png)
-Format: ![Alt Text](url)
+Format: ![Alt Text](url) -->
 
-#### Few features are still not yet implemented
+### Few features are still not yet implemented
