@@ -1,3 +1,20 @@
+/*
+Three HX711 sensorsors are connected
+Pin 13-> 1st HX711 CLK
+Pin 14-> 1st HX711 DOUT
+Pin VIN-> 1st HX711 VCC
+Pin GND-> 1st HX711 GND
+Pin 39-> 2nd HX711 CLK
+Pin 35-> 2nd HX711 DOUT
+Pin VIN-> 2nd HX711 VCC
+Pin GND-> 2nd HX711 GND
+Pin 33-> 3rd HX711 CLK
+Pin 26-> 3rd HX711 DOUT
+Pin VIN-> 3rd HX711 VCC
+Pin GND-> 3rd HX711 GND
+ 
+*/
+
 #include "HX711.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -7,15 +24,6 @@ const char* password =  "helloworld";
 
 String uname = "souptikdatta"; /*The username of the dustbin owner*/
 
-/*There will be two ESP32 one will have two attachments with Bio and Non_bio dustbins another will be connected to only one attachment to E_waste dustbin*/
-String attachments = "single"; /*double if connected to two dustbins single if connected to one dustbin*/
-String e_waste = "50";
-String info = "{\"e_waste\":\"" + e_waste + "\",\"attach\":\"" + attachments + "\"}";
-
-//HX711 scale;
-//float calibration_factor = -6075; // this calibration factor is adjusted according to my load cell
-//float units;
- 
 void setup() {
  
   Serial.begin(115200);
@@ -37,18 +45,11 @@ void loop() {
  if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
  
    HTTPClient http;   
-   if (attachments == "double"){
-      String bio = "70";
-      String non_bio = "80";
-//      String data = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"e_waste\":\"" + e_waste + "\"}";
-      String info = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"attach\":\"" + attachments + "\"}";
-      Serial.println(info);
-   }
-   else{
-      String e_waste = "50";
-      String info = "{\"e_waste\":\"" + e_waste + "\",\"attach\":\"" + attachments + "\"}";
-      Serial.println(info);
-   }
+   String bio = "80";
+   String non_bio = "90";
+   String e_waste = "60";
+   String info = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"e_waste\":\"" + e_waste + "\"}";
+   Serial.println(info);
    String common_address = "https://tech-bin.souptikdatta.repl.co/upload/";
    String path = "https://tech-bin.souptikdatta.repl.co/upload/" + uname;
    http.begin(path);  //Specify destination for HTTP request

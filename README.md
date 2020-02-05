@@ -26,6 +26,10 @@ Format: ![Alt Text](url)
 ![SS4](/screenshots/Capture3.png)
 Format: ![Alt Text](url) -->
 
-### Few features are still not yet implemented
+### UploadData.ino file contains code for sending information gained through HX711 sensor (note that calibration factor is not yet set) and the uploadData2.ino file has manual entries for three dustbins
+
+#### When sensor not connected the uploadData2.ino sends 0 values for each dustbins
+
+#### For now the ssid and password for wifi connection are written inside the code and cannot be changed by common user
 
 [![Run on Repl.it](https://repl.it/badge/github/Souptik2001/Tech-Bin)](https://repl.it/github/Souptik2001/Tech-Bin)
