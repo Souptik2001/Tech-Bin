@@ -8,7 +8,7 @@ const char* password =  "helloworld";
 String uname = "souptikdatta"; /*The username of the dustbin owner*/
 
 /*There will be two ESP32 one will have two attachments with Bio and Non_bio dustbins another will be connected to only one attachment to E_waste dustbin*/
-String attachments = "double"; /*double if connected to two dustbins single if connected to one dustbin*/
+String attachments = "single"; /*double if connected to two dustbins single if connected to one dustbin*/
 
 //HX711 scale;
 //float calibration_factor = -6075; // this calibration factor is adjusted according to my load cell
@@ -41,10 +41,12 @@ void loop() {
       String non_bio = "80";
 //      String data = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"e_waste\":\"" + e_waste + "\"}";
       String data = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"attach\":\"" + attachments + "\"}";
+      Serial.println(data);
    }
    else{
-      String e_waste = "90";
+      String e_waste = "50";
       String data = "{\"e_waste\":\"" + e_waste + "\",\"attach\":\"" + attachments + "\"}";
+      Serial.println(data);
    }
    String common_address = "https://tech-bin.souptikdatta.repl.co/upload/";
    String path = "https://tech-bin.souptikdatta.repl.co/upload/" + uname;

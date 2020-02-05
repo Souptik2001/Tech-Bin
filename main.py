@@ -230,24 +230,28 @@ def upload(uname):
             if (cleared == 'F'):
                 editable.Points = editable.Points - 5
             cleared = 'F'
-        if (content['attach']=='double'):
+        if (content['attach']=="double"):
             editable.Bio = content['bio']
             editable.Non_Bio = content['non_bio']
-        if (content['attach']=='single'):
+        if (content['attach']=="single"):
             editable.E_waste = content['e_waste']
-        if ((int(content['bio'])-int(old_bio)) > 0):
-            new_point = int(editable.Points) + (int(content['bio'])-int(old_bio))
-            editable.Points = new_point
-        if ((int(content['non_bio'])-int(old_non_bio)) > 0):
-            new_point = int(editable.Points) + (int(content['non_bio'])-int(old_non_bio))
-            editable.Points = new_point
-        if ((int(content['e_waste'])-int(old_e_waste)) > 0):
-            new_point = int(editable.Points) + (int(content['e_waste'])-int(old_e_waste))
-            editable.Points = new_point
+        if (content['attach']=="double"):
+            if ((int(content['bio'])-int(old_bio)) > 0):
+                new_point = int(editable.Points) + (int(content['bio'])-int(old_bio))
+                editable.Points = new_point
+            if ((int(content['non_bio'])-int(old_non_bio)) > 0):
+                new_point = int(editable.Points) + (int(content['non_bio'])-int(old_non_bio))
+                editable.Points = new_point
+        if (content['attach']=="single"):
+            if ((int(content['e_waste'])-int(old_e_waste)) > 0):
+                new_point = int(editable.Points) + (int(content['e_waste'])-int(old_e_waste))
+                editable.Points = new_point
         now = datetime.now()
         current_date = now.strftime("%d")
         print(current_date)
+        current_month = now.strftime("%B")
         this_month = datetime.now().month
+         months = ['January','February','March','April','May','June','July','August','September','October','November','December']
         if (current_month == months[0] or current_month == months[2] or current_month == months[4] or current_month == months[6] or current_month == months[7] or current_month == months[9] or current_month == months[11]):
             time_left = 31 - int(current_date)
         if (current_month == months[3] or current_month == months[5] or current_month == months[8] or current_month == months[10]):
