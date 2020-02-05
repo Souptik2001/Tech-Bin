@@ -21,9 +21,9 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 app.secret_key='super-secret-key'
 if (local_host):
     # app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/techbin"
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///techbin.db"
-else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:@localhost/techbin"
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///techbin.db"
 db = SQLAlchemy(app)
 class Garbage(db.Model):
     sl_no = db.Column(db.Integer, primary_key=True)
@@ -99,9 +99,18 @@ def dashboard(uname):
         os.mkdir(mk_path)
         plt.savefig(path, bbox_inches='tight')
         # plt.show()
+        current_date = now.strftime("%d")
+        print(current_date)
+        current_month = now.strftime("%B")
+        if (current_month == months[0] or current_month == months[2] or current_month == months[4] or current_month == months[6] or current_month == months[7] or current_month == months[9] or current_month == months[11]):
+            time_left = 31 - int(current_date)
+        if (current_month == months[3] or current_month == months[5] or current_month == months[8] or current_month == months[10]):
+            time_left = 30 - int(current_date)
+        if (current_month == months[1]):
+            time_left = 29 - int(current_date)
         this_month = datetime.now().month
         prev_month = this_month-1
-        return render_template("index.html", info=info, name_info=name_info, current_time=current_time, this_month=this_month, prev_month=prev_month)
+        return render_template("index.html", info=info, name_info=name_info, current_time=current_time, this_month=this_month, prev_month=prev_month, time_left=time_left)
     else:
         return redirect('/')
 
@@ -195,6 +204,11 @@ def o_dashboard():
     else:
         return redirect('/login')
 
+# Data sent in json format
+# One field is attachments : double or sinlge
+# Bio and non-bio in double
+# E_waste in single
+
 @app.route('/upload/<string:uname>', methods=['POST'])
 def upload(uname):
     if(request.method=='POST'):
@@ -206,7 +220,6 @@ def upload(uname):
         old_e_waste = editable.E_waste
         present_hour = datetime.now().time().strftime("%H")
         present_min = datetime.now().time().strftime("%M")
-        print(datetime.now().date().weekday())
         if (present_hour == 12 and present_min>=0 and present_min<=50):
             if(old_bio<1 and old_non_bio<1 and old_e_waste<1 and cleared=='F'):
                 cleared = 'T'
@@ -217,9 +230,11 @@ def upload(uname):
             if (cleared == 'F'):
                 editable.Points = editable.Points - 5
             cleared = 'F'
-        editable.Bio = content['bio']
-        editable.Non_Bio = content['non_bio']
-        editable.E_waste = content['e_waste']
+        if (content['attach']=='double'):
+            editable.Bio = content['bio']
+            editable.Non_Bio = content['non_bio']
+        if (content['attach']=='single'):
+            editable.E_waste = content['e_waste']
         if ((int(content['bio'])-int(old_bio)) > 0):
             new_point = int(editable.Points) + (int(content['bio'])-int(old_bio))
             editable.Points = new_point
@@ -229,7 +244,27 @@ def upload(uname):
         if ((int(content['e_waste'])-int(old_e_waste)) > 0):
             new_point = int(editable.Points) + (int(content['e_waste'])-int(old_e_waste))
             editable.Points = new_point
+        now = datetime.now()
+        current_date = now.strftime("%d")
+        print(current_date)
+        this_month = datetime.now().month
+        if (current_month == months[0] or current_month == months[2] or current_month == months[4] or current_month == months[6] or current_month == months[7] or current_month == months[9] or current_month == months[11]):
+            time_left = 31 - int(current_date)
+        if (current_month == months[3] or current_month == months[5] or current_month == months[8] or current_month == months[10]):
+            time_left = 30 - int(current_date)
+        if (current_month == months[1]):
+            time_left = 29 - int(current_date) 
+        months_db = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'August', 'Sept', 'Oct', 'Nov', 'Decem']
+        if(time_left==0):
+            editable.months_db[this_month-1] = editable.This_month
+            editable.This_month = 0
         db.session.commit()
         return redirect('/dashboard')
 
-app.run(host="0.0.0.0", port="1200", debug=True)
+
+
+
+if(local_host):
+    app.run(debug=True)
+else:
+    app.run(host="0.0.0.0", port="1200", debug=True)
