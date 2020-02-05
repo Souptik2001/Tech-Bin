@@ -1,8 +1,3 @@
-/*
-Two HX711 sensorsors are connected (either two or one)
-Pin -> 1st 
-*/
-
 #include "HX711.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -11,6 +6,11 @@ const char* ssid = "mynet";
 const char* password =  "helloworld";
 
 String uname = "souptikdatta"; /*The username of the dustbin owner*/
+
+/*There will be two ESP32 one will have two attachments with Bio and Non_bio dustbins another will be connected to only one attachment to E_waste dustbin*/
+String attachments = "single"; /*double if connected to two dustbins single if connected to one dustbin*/
+String e_waste = "50";
+String info = "{\"e_waste\":\"" + e_waste + "\",\"attach\":\"" + attachments + "\"}";
 
 //HX711 scale;
 //float calibration_factor = -6075; // this calibration factor is adjusted according to my load cell
@@ -37,11 +37,18 @@ void loop() {
  if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
  
    HTTPClient http;   
-   String bio = "70";
-   String non_bio = "80";
-   String e_waste = "50";
-   String info = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"e_waste\":\"" + e_waste + "\"}";
-   Serial.println(info);
+   if (attachments == "double"){
+      String bio = "70";
+      String non_bio = "80";
+//      String data = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"e_waste\":\"" + e_waste + "\"}";
+      String info = "{\"bio\":\"" + bio + "\",\"non_bio\":\"" + non_bio + "\",\"attach\":\"" + attachments + "\"}";
+      Serial.println(info);
+   }
+   else{
+      String e_waste = "50";
+      String info = "{\"e_waste\":\"" + e_waste + "\",\"attach\":\"" + attachments + "\"}";
+      Serial.println(info);
+   }
    String common_address = "https://tech-bin.souptikdatta.repl.co/upload/";
    String path = "https://tech-bin.souptikdatta.repl.co/upload/" + uname;
    http.begin(path);  //Specify destination for HTTP request
